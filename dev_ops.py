@@ -261,10 +261,9 @@ class SquadRig_OT_ConvertToB1Droid(bpy.types.Operator):
         hide_finger_bones.append(p_bones['CON_Finger42_L'])
 
         for bone in hide_finger_bones:
-            for layer in bone.bone.layers:
-                layer = False
+            for i in range(len(bone.bone.layers)):
+                bone.bone.layers[i] = False
             bone.bone.layers[14] = True
-            bone.bone.layers[0] = False
 
         return {'FINISHED'}
 

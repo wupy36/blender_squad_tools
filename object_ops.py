@@ -132,7 +132,7 @@ class SquadRig_OT_MakeCharacterSkin(bpy.types.Operator):
         ob.location = 0,0,0
         bpy.context.view_layer.update()
         #if the model isnt already nearish the right dimensions for being the correct scale, then scale it up
-        if ob.dimensions <= Vector((20,20,100)):
+        if ob.dimensions.x <= 20 and ob.dimensions.y <= 20 and ob.dimensions.z <= 100:
             ob.scale = ob.scale * 100
         if ob.dimensions.x > ob.dimensions.y:
             #safe to assume here that the mesh is facing Y+ in its rest position
@@ -275,7 +275,7 @@ class SquadRig_OT_MakeChildOf(bpy.types.Operator):
     def execute(self, context):
         ob = bpy.context.view_layer.objects.active
 
-        #squadrig = getsquadrig(self)
+        squadrig = None
         for object in bpy.data.objects:
             if object.get("squadrigid") == ob.get("squadrigattachedtoid"):
                 squadrig = object

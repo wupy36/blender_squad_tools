@@ -755,7 +755,7 @@ def export_weapon_animation(self, context, filepath, visual_bake_actions, force_
     baked_action_names = []
     if visual_bake_actions:#visual bake actions to their linked actions
         for nlatrack in ob.animation_data.nla_tracks:
-            if nlatrack.strips[0].action.SquadLinkedAction in bpy.data.actions is not None:
+            if nlatrack.strips[0].action.SquadLinkedAction in bpy.data.actions:
                 nlatrack.mute = False #unmute track
                 action_to_bake = nlatrack.strips[0].action
                 ob.animation_data.action = action_to_bake
@@ -857,7 +857,7 @@ def export_weapon_animation(self, context, filepath, visual_bake_actions, force_
             for constraint in bone.constraints:
                 constraint.keyframe_insert("mute")
         
-        if match_linked_length and nlatrack.strips[0].action.SquadLinkedAction in bpy.data.actions is not None:
+        if match_linked_length and nlatrack.strips[0].action.SquadLinkedAction in bpy.data.actions:
             linked_action = bpy.data.actions[nlatrack.strips[0].action.SquadLinkedAction]
             nlatrack.strips[0].frame_start = linked_action.frame_range[0]
             nlatrack.strips[0].frame_end =   linked_action.frame_range[1]
@@ -901,7 +901,7 @@ def export_weapon_animation(self, context, filepath, visual_bake_actions, force_
     ob.animation_data.action = old_action
 
 
-    if object_export_name is not None:
+    if object_export_name != "":
         if object_named_root is not None:
             object_named_root.name = object_export_name
         ob.name = ob_old_name
