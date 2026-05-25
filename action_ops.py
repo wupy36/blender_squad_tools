@@ -45,10 +45,8 @@ class SquadRig_OT_UnmarkForExport(bpy.types.Operator):
 
     def execute(self, context):
         ob = context.object
-        if(self.action_to_unmark in ob.animation_data.nla_tracks):
-
-            unmark_index = ob.animation_data.nla_tracks.find(self.action_to_unmark)
-        
+        unmark_index = ob.animation_data.nla_tracks.find(self.action_to_unmark)
+        if unmark_index >= 0:
             ob.animation_data.nla_tracks.remove(ob.animation_data.nla_tracks[unmark_index])
         
         return {'FINISHED'}
@@ -63,7 +61,9 @@ class SquadRig_OT_LinkAction(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.active_object.animation_data.action is not None
+        return (context.active_object is not None
+                and context.active_object.animation_data is not None
+                and context.active_object.animation_data.action is not None)
 
     def execute(self, context):
         ob = bpy.context.active_object
@@ -115,13 +115,13 @@ class SquadRig_OT_DeleteAction(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        if  context.active_object.animation_data is not None:
+        if context.active_object is not None and context.active_object.animation_data is not None:
             return context.active_object.animation_data.action is not None
 
     def execute(self, context):
-           
+
         ob = bpy.context.object
-        
+
         if ob.animation_data.action is not None:
             bpy.data.actions.remove(ob.animation_data.action)
 
@@ -140,17 +140,17 @@ class SquadRig_OT_DuplicateAction(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        if  context.active_object.animation_data is not None:
+        if context.active_object is not None and context.active_object.animation_data is not None:
             return context.active_object.animation_data.action is not None
 
     def execute(self, context):
-        
+
         ob = bpy.context.object
-        
+
         #clear previous action
         if ob.animation_data:
             if ob.animation_data.action is not None:
-                original_action = ob.animation_data.action 
+                original_action = ob.animation_data.action
                 duplicated_action = original_action.copy()
                 #duplicated_action.name = original_action
 
@@ -171,7 +171,7 @@ class SquadRig_OT_AddFakeUser(bpy.types.Operator):
 
     def execute(self, context):
         
-        if self.action_name is not "":
+        if self.action_name != "":
             bpy.data.actions[self.action_name].use_fake_user = True
                 
         return {'FINISHED'}

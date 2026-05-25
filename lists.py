@@ -41,7 +41,7 @@ class NLA_UL_list(bpy.types.UIList):
             
             unmark_row = layout.row()
             unmark_row.ui_units_x = 1
-            unmark_row.operator("SquadRig.unmarkforexport",text='', icon='REMOVE').action_to_unmark = item.name
+            unmark_row.operator("squadrig.unmarkforexport",text='', icon='REMOVE').action_to_unmark = item.name
             
             
             #DISPLAY
