@@ -270,7 +270,14 @@ class SquadRig_PT_ToolsPanel(bpy.types.Panel):
         row = layout.column()
         op = row.operator("squadrig.make_child_of", text = "Attach Left Hand", icon = "CONSTRAINT_BONE")
         op.attach_target_bone = "Bip01_L_Hand"
-        
+
         row = layout.column()
         op = row.operator("squadrig.make_child_of", text = "Attach Right Hand", icon = "CONSTRAINT_BONE")
         op.attach_target_bone = "Bip01_R_Hand"
+
+        layout.separator()
+        layout.label(text="Rig Conversion")
+        col_flow = layout.column_flow(columns=1, align=True)
+        col_flow.scale_y = 1.25
+        col_flow.operator("squadrig.convert_squad_to_ue4", text = "Squad Rig → UE4 Mannequin", icon = "ARMATURE_DATA")
+        col_flow.operator("squadrig.convert_ue4_to_squad", text = "UE4 Mannequin → Squad Rig", icon = "ARMATURE_DATA")

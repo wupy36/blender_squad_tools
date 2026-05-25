@@ -106,6 +106,9 @@ from . ui import SquadRig_PT_ExportPanel
 from . dev_ops import SquadRig_PT_Dev_Panel
 from . dev_ops import SquadRig_OT_ConvertToB1Droid
 from . dev_ops import SquadRig_OT_FixAction
+
+from . rig_convert_ops import SquadRig_OT_ConvertSquadToUE4
+from . rig_convert_ops import SquadRig_OT_ConvertUE4ToSquad
       
 
 def getweapon():
@@ -187,10 +190,15 @@ def register():
     bpy.utils.register_class(SquadRig_OT_FixAction)
     bpy.utils.register_class(SquadRig_PT_Dev_Panel)
 
+    bpy.utils.register_class(SquadRig_OT_ConvertSquadToUE4)
+    bpy.utils.register_class(SquadRig_OT_ConvertUE4ToSquad)
+
 
 
 def unregister():
     print("squad rig tools unregister")
+    bpy.utils.unregister_class(SquadRig_OT_ConvertUE4ToSquad)
+    bpy.utils.unregister_class(SquadRig_OT_ConvertSquadToUE4)
     bpy.utils.unregister_class(SquadRig_PT_Dev_Panel)
     bpy.utils.unregister_class(SquadRig_OT_FixAction)
     bpy.utils.unregister_class(SquadRig_OT_ConvertToB1Droid)
