@@ -281,3 +281,6 @@ class SquadRig_PT_ToolsPanel(bpy.types.Panel):
         col_flow.scale_y = 1.25
         col_flow.operator("squadrig.convert_squad_to_ue4", text = "Squad Rig → UE4 Mannequin", icon = "ARMATURE_DATA")
         col_flow.operator("squadrig.convert_ue4_to_squad", text = "UE4 Mannequin → Squad Rig", icon = "ARMATURE_DATA")
+        col_flow.separator()
+        col_flow.operator("squadrig.convert_squad_to_ue5", text = "Squad Rig → UE5 Mannequin", icon = "ARMATURE_DATA")
+        col_flow.operator("squadrig.convert_ue5_to_squad", text = "UE5 Mannequin → Squad Rig", icon = "ARMATURE_DATA")

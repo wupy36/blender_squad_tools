@@ -109,6 +109,8 @@ from . dev_ops import SquadRig_OT_FixAction
 
 from . rig_convert_ops import SquadRig_OT_ConvertSquadToUE4
 from . rig_convert_ops import SquadRig_OT_ConvertUE4ToSquad
+from . rig_convert_ops import SquadRig_OT_ConvertSquadToUE5
+from . rig_convert_ops import SquadRig_OT_ConvertUE5ToSquad
       
 
 def getweapon():
@@ -192,11 +194,15 @@ def register():
 
     bpy.utils.register_class(SquadRig_OT_ConvertSquadToUE4)
     bpy.utils.register_class(SquadRig_OT_ConvertUE4ToSquad)
+    bpy.utils.register_class(SquadRig_OT_ConvertSquadToUE5)
+    bpy.utils.register_class(SquadRig_OT_ConvertUE5ToSquad)
 
 
 
 def unregister():
     print("squad rig tools unregister")
+    bpy.utils.unregister_class(SquadRig_OT_ConvertUE5ToSquad)
+    bpy.utils.unregister_class(SquadRig_OT_ConvertSquadToUE5)
     bpy.utils.unregister_class(SquadRig_OT_ConvertUE4ToSquad)
     bpy.utils.unregister_class(SquadRig_OT_ConvertSquadToUE4)
     bpy.utils.unregister_class(SquadRig_PT_Dev_Panel)

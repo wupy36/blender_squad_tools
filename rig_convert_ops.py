@@ -1,6 +1,8 @@
 import bpy
 
-# Squad Bip01 skeleton → UE4 Mannequin bone name mapping
+# ---------------------------------------------------------------------------
+# Squad Bip01 → UE4 Mannequin
+# ---------------------------------------------------------------------------
 SQUAD_TO_UE4_BONE_MAP = {
     'Root':             'root',
     'Bip01':            'pelvis',
@@ -72,15 +74,19 @@ SQUAD_TO_UE4_BONE_MAP = {
     'Bip01_R_Finger41': 'pinky_02_r',
     'Bip01_R_Finger42': 'pinky_03_r',
     # IK / special
-    'IK_Feet_Root':     'ik_foot_root',
-    'IK_Left_Foot':     'ik_foot_l',
-    'IK_Right_Foot':    'ik_foot_r',
-    'Bip01_IK_Weapon':  'ik_hand_gun',
-    'Bip01_Weapon1':    'weapon_r',
-    'Bip01_CameraBone': 'camera',
+    'IK_Feet_Root':      'ik_foot_root',
+    'IK_Left_Foot':      'ik_foot_l',
+    'IK_Right_Foot':     'ik_foot_r',
+    'Bip01_IK_Weapon':   'ik_hand_gun',
+    'Bip01_IK_L_Hand':   'ik_hand_l',
+    'Bip01_IK_R_Hand':   'ik_hand_r',
+    'Bip01_Weapon1':     'weapon_r',
+    'Bip01_CameraBone':  'camera',
 }
 
-# UE4 Mannequin → Squad Bip01 bone name mapping (explicit reverse)
+# ---------------------------------------------------------------------------
+# UE4 Mannequin → Squad Bip01
+# ---------------------------------------------------------------------------
 UE4_TO_SQUAD_BONE_MAP = {
     'root':         'Root',
     'pelvis':       'Bip01',
@@ -156,10 +162,46 @@ UE4_TO_SQUAD_BONE_MAP = {
     'ik_foot_l':    'IK_Left_Foot',
     'ik_foot_r':    'IK_Right_Foot',
     'ik_hand_gun':  'Bip01_IK_Weapon',
+    'ik_hand_l':    'Bip01_IK_L_Hand',
+    'ik_hand_r':    'Bip01_IK_R_Hand',
     'weapon_r':     'Bip01_Weapon1',
     'camera':       'Bip01_CameraBone',
 }
 
+# ---------------------------------------------------------------------------
+# Squad Bip01 → UE5 Mannequin (Manny / Quinn)
+#
+# UE5 uses the same bone names as UE4 for every bone Squad has an equivalent
+# for.  UE5 adds spine_04, spine_05, neck_02, ik_hand_root, and a set of
+# twist/correction bones — none of those have Squad counterparts, so they are
+# not present here and will be left unrenamed during a UE5→Squad conversion.
+# ---------------------------------------------------------------------------
+SQUAD_TO_UE5_BONE_MAP = {
+    **SQUAD_TO_UE4_BONE_MAP,
+    # UE5 adds ik_hand_root as a parent of the hand IK chain; Squad has no
+    # equivalent so this entry only applies when an explicit root bone exists.
+    # (No Squad source bone maps here — the key column must be Squad names.)
+}
+
+# ---------------------------------------------------------------------------
+# UE5 Mannequin → Squad Bip01
+#
+# Same as UE4→Squad for all shared bones.  UE5-exclusive bones (spine_04,
+# spine_05, neck_02, ik_hand_root, twist bones) have no Squad counterpart and
+# will remain unchanged after the conversion — delete or repurpose them
+# manually if needed.
+# ---------------------------------------------------------------------------
+UE5_TO_SQUAD_BONE_MAP = {
+    **UE4_TO_SQUAD_BONE_MAP,
+    # UE5 adds a second neck bone; Squad has only one neck bone so neck_02
+    # is intentionally absent — it will be left unrenamed.
+    # spine_04 / spine_05 are likewise absent for the same reason.
+}
+
+
+# ---------------------------------------------------------------------------
+# Core rename helper
+# ---------------------------------------------------------------------------
 
 def apply_bone_rename(armature_obj, bone_map):
     """Rename bones in armature, then update vertex groups and fcurves in all actions."""
@@ -205,6 +247,10 @@ def apply_bone_rename(armature_obj, bone_map):
     return len(renamed)
 
 
+# ---------------------------------------------------------------------------
+# Operators — UE4
+# ---------------------------------------------------------------------------
+
 class SquadRig_OT_ConvertSquadToUE4(bpy.types.Operator):
     """Rename bones on the active armature from Squad (Bip01) naming to UE4 Mannequin naming.\nAlso updates vertex groups and animation fcurves."""
     bl_idname = "squadrig.convert_squad_to_ue4"
@@ -233,5 +279,41 @@ class SquadRig_OT_ConvertUE4ToSquad(bpy.types.Operator):
 
     def execute(self, context):
         count = apply_bone_rename(context.active_object, UE4_TO_SQUAD_BONE_MAP)
+        self.report({'INFO'}, f"Renamed {count} bones to Squad rig naming.")
+        return {'FINISHED'}
+
+
+# ---------------------------------------------------------------------------
+# Operators — UE5
+# ---------------------------------------------------------------------------
+
+class SquadRig_OT_ConvertSquadToUE5(bpy.types.Operator):
+    """Rename bones on the active armature from Squad (Bip01) naming to UE5 Mannequin naming.\nAlso updates vertex groups and animation fcurves.\nNote: UE5-exclusive bones (spine_04/05, neck_02) have no Squad equivalent and will not be created."""
+    bl_idname = "squadrig.convert_squad_to_ue5"
+    bl_label = "Squad Rig → UE5 Mannequin"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None and context.active_object.type == 'ARMATURE'
+
+    def execute(self, context):
+        count = apply_bone_rename(context.active_object, SQUAD_TO_UE5_BONE_MAP)
+        self.report({'INFO'}, f"Renamed {count} bones to UE5 Mannequin naming.")
+        return {'FINISHED'}
+
+
+class SquadRig_OT_ConvertUE5ToSquad(bpy.types.Operator):
+    """Rename bones on the active armature from UE5 Mannequin naming to Squad (Bip01) naming.\nAlso updates vertex groups and animation fcurves.\nNote: UE5-exclusive bones (spine_04/05, neck_02, twist bones) have no Squad equivalent and will be left unrenamed."""
+    bl_idname = "squadrig.convert_ue5_to_squad"
+    bl_label = "UE5 Mannequin → Squad Rig"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None and context.active_object.type == 'ARMATURE'
+
+    def execute(self, context):
+        count = apply_bone_rename(context.active_object, UE5_TO_SQUAD_BONE_MAP)
         self.report({'INFO'}, f"Renamed {count} bones to Squad rig naming.")
         return {'FINISHED'}
